@@ -6,7 +6,7 @@ import type { ThemeConfig } from 'antd';
 export const lightTheme: ThemeConfig = {
   token: {
     // Brand colors
-    colorPrimary: '#1677ff',
+    colorPrimary: '#18181b',
     colorSuccess: '#52c41a',
     colorWarning: '#faad14',
     colorError: '#ff4d4f',
@@ -37,7 +37,7 @@ export const lightTheme: ThemeConfig = {
 
     // Typography
     fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     fontSize: 14,
     fontSizeHeading1: 38,
     fontSizeHeading2: 30,
@@ -49,7 +49,7 @@ export const lightTheme: ThemeConfig = {
     borderRadius: 6,
     borderRadiusLG: 8,
     borderRadiusSM: 4,
-    controlHeight: 32,
+    controlHeight: 36, // h-9 from shadcn
     controlHeightLG: 40,
     controlHeightSM: 24,
 
@@ -72,8 +72,18 @@ export const lightTheme: ThemeConfig = {
   components: {
     Button: {
       algorithm: true,
-      colorPrimary: '#1677ff',
+      colorPrimary: '#18181b',
+      colorPrimaryHover: 'rgba(24, 24, 27, 0.9)', // hover:bg-primary/90
+      colorPrimaryActive: 'rgba(24, 24, 27, 0.85)',
       borderRadius: 6,
+      fontWeight: 500, // font-medium
+      paddingInline: 16, // px-4
+      paddingBlock: 8, // py-2
+      controlHeight: 36, // h-9
+      fontSize: 14, // text-sm
+      lineHeight: 1.5,
+      boxShadow: 'none',
+      primaryShadow: 'none',
     },
     Input: {
       algorithm: true,
@@ -138,7 +148,7 @@ export const darkTheme: ThemeConfig = {
 
     // Typography
     fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      "var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     fontSize: 14,
     fontSizeHeading1: 38,
     fontSizeHeading2: 30,
@@ -150,7 +160,7 @@ export const darkTheme: ThemeConfig = {
     borderRadius: 6,
     borderRadiusLG: 8,
     borderRadiusSM: 4,
-    controlHeight: 32,
+    controlHeight: 36, // h-9 from shadcn
     controlHeightLG: 40,
     controlHeightSM: 24,
 
@@ -173,8 +183,18 @@ export const darkTheme: ThemeConfig = {
   components: {
     Button: {
       algorithm: true,
-      colorPrimary: '#1668dc',
+      colorPrimary: '#18181b',
+      colorPrimaryHover: 'rgba(24, 24, 27, 0.9)', // hover:bg-primary/90
+      colorPrimaryActive: 'rgba(24, 24, 27, 0.85)',
       borderRadius: 6,
+      fontWeight: 500, // font-medium
+      paddingInline: 16, // px-4
+      paddingBlock: 8, // py-2
+      controlHeight: 36, // h-9
+      fontSize: 14, // text-sm
+      lineHeight: 1.5,
+      boxShadow: 'none',
+      primaryShadow: 'none',
       // Default button (no type) styling
       defaultBg: '#1f1f1f',
       defaultColor: 'rgba(255, 255, 255, 0.85)',
