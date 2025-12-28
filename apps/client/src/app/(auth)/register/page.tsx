@@ -24,7 +24,7 @@ interface RegisterFormValues {
   firstName: string;
   lastName: string;
   email: string;
-  organisationName: string;
+  tenantName: string;
   countryCode: string;
   phoneNumber: string;
   password: string;
@@ -49,7 +49,7 @@ export default function RegisterPage() {
           data: {
             first_name: values.firstName,
             last_name: values.lastName,
-            organisation_name: values.organisationName,
+            tenant_name: values.tenantName,
             country_code: values.countryCode,
             phone_number: values.phoneNumber,
             phone: `${values.countryCode}${values.phoneNumber}`,
@@ -116,7 +116,7 @@ export default function RegisterPage() {
         </Form.Item>
 
         <Form.Item
-          name="organisationName"
+          name="tenantName"
           rules={[
             { required: true, message: 'Please enter your organisation name' },
           ]}

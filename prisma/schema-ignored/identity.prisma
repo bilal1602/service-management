@@ -1,0 +1,47 @@
+model Tenant {
+  id        String   @id @db.Uuid
+  name      String
+  createdAt DateTime @map("created_at")
+
+  members TenantMember[]
+  Invite  Invite[]
+
+  @@map("tenants")
+}
+
+model Profile {
+  id        String   @id @db.Uuid
+  email     String?
+  phone     String?
+  createdAt DateTime @map("created_at")
+
+  memberships TenantMember[]
+
+  @@map("profiles")
+}
+
+model TenantMember {
+  userId    String   @map("user_id") @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  role      String
+  createdAt DateTime @map("created_at")
+
+  user   Profile @relation(fields: [userId], references: [id])
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+
+  @@id([userId, tenantId])
+  @@map("tenant_members")
+}
+
+model Invite {
+  token     String    @id
+  tenantId  String    @map("tenant_id") @db.Uuid
+  role      String
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@map("invites")
+}

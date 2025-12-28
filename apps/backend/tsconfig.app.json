@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "module": "nodenext",
+    "rootDir": "../../",
     "types": ["node"],
-    "rootDir": "src",
     "baseUrl": "src",
     "paths": {
       "@/*": ["./*"],
@@ -12,7 +12,9 @@
       "@config/*": ["./modules/config/*"],
       "@auth/*": ["./modules/auth/*"],
       "@root/shared": ["../../../libs/shared/src/index.ts"],
-      "@root/shared/*": ["../../../libs/shared/src/*"]
+      "@root/shared/*": ["../../../libs/shared/src/*"],
+      "@generated/prisma": ["../../../generated/prisma"],
+      "@generated/prisma/*": ["../../../generated/prisma/*"]
     },
     "moduleResolution": "nodenext",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
@@ -20,7 +22,7 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../generated/prisma/**/*.ts"],
   "exclude": [
     "out-tsc",
     "dist",

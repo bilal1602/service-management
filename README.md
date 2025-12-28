@@ -9,7 +9,7 @@ A monorepo application built with Nx, featuring a Next.js frontend and NestJS ba
 | **Monorepo** | [Nx](https://nx.dev)                                                 |
 | **Frontend** | [Next.js](https://nextjs.org) 16, React 19, Ant Design, Tailwind CSS |
 | **Backend**  | [NestJS](https://nestjs.com) 11                                      |
-| **Database** | [Prisma](https://prisma.io) ORM                                      |
+| **Database** | [Prisma](https://prisma.io) ORM, [Supabase](https://supabase.com)    |
 | **Auth**     | [Supabase](https://supabase.com)                                     |
 | **State**    | Zustand, TanStack Query                                              |
 
@@ -17,6 +17,7 @@ A monorepo application built with Nx, featuring a Next.js frontend and NestJS ba
 
 - **Node.js**: `24.11.1` (use `nvm use` to switch)
 - **Yarn**: `4.10.3` (via Corepack)
+- **Docker**: Required for Supabase local development
 
 ## Quick Start
 
@@ -25,67 +26,122 @@ A monorepo application built with Nx, featuring a Next.js frontend and NestJS ba
 git clone <repo-url>
 cd service-management
 
-# Run setup script (installs dependencies + copies env files)
+# Run setup (installs dependencies + creates env files)
 yarn setup
 
 # Configure environment variables (see section below)
+# Update the generated .env files with your actual values
 
-# Start development
+# Start Supabase and seed database
+yarn db:setup
+
+# Start development servers
 yarn dev
 ```
 
 ## Environment Variables
 
-Environment files are **git-ignored**. Copy from `.sample` files and fill in your values:
+The `setup.sh` script automatically creates `.env` files with placeholder values. You need to update them with your actual configuration.
 
-### Root (Shared)
+### Root (`.env`)
 
-```bash
-cp .env.sample .env
-```
-
-### Frontend (`apps/client`)
+Used by Prisma for database connection:
 
 ```bash
-cp apps/client/.env.sample apps/client/.env.local
+DATABASE_URL="postgresql://postgres:postgres@localhost:54322/postgres"
 ```
 
-| Variable                        | Description            |
-| ------------------------------- | ---------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL   |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
-| `NEXT_PUBLIC_API_URL`           | Backend API URL        |
+**How to get:** After running `yarn db:start`, the connection string is shown in the output, or check `yarn db:status`.
 
-### Backend (`apps/backend`)
+### Frontend (`apps/client/.env.local`)
 
 ```bash
-cp apps/backend/.env.sample apps/backend/.env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key-here"
+
+# API
+NEXT_PUBLIC_API_URL="http://localhost:8080/api"
 ```
 
-| Variable       | Description                       |
-| -------------- | --------------------------------- |
-| `PORT`         | Server port (default: 8080)       |
-| `JWT_SECRET`   | Secret for JWT tokens             |
-| `DATABASE_URL` | Prisma database connection string |
+**How to get Supabase values:**
+
+1. Run `yarn db:start`
+2. Run `yarn db:status` to see the API URL and anon key
+3. Or check Supabase dashboard: Settings > API
+
+### Backend (`apps/backend/.env`)
+
+```bash
+# Server
+NODE_ENV=development
+PORT=8080
+
+# Auth
+# Generate a secure random string: openssl rand -base64 32
+JWT_SECRET="your-jwt-secret-here"
+```
+
+**How to generate JWT_SECRET:**
+
+```bash
+openssl rand -base64 32
+```
 
 ## Available Scripts
 
-| Command       | Description                        |
-| ------------- | ---------------------------------- |
-| `yarn setup`  | Initial project setup              |
-| `yarn dev`    | Run frontend + backend in dev mode |
-| `yarn build`  | Build all apps                     |
-| `yarn lint`   | Lint all apps                      |
-| `yarn test`   | Run all tests                      |
-| `yarn format` | Format code with Prettier          |
+### Setup
 
-### Prisma Commands
+| Command      | Description                              |
+| ------------ | ---------------------------------------- |
+| `yarn setup` | Initial project setup (deps + env files) |
+
+### Development
+
+| Command            | Description                        |
+| ------------------ | ---------------------------------- |
+| `yarn dev`         | Run frontend + backend in dev mode |
+| `yarn dev:client`  | Run only frontend                  |
+| `yarn dev:backend` | Run only backend                   |
+
+### Build & Test
+
+| Command           | Description             |
+| ----------------- | ----------------------- |
+| `yarn build`      | Build all apps          |
+| `yarn lint`       | Lint all apps           |
+| `yarn lint:fix`   | Lint and auto-fix       |
+| `yarn test`       | Run all tests           |
+| `yarn test:watch` | Run tests in watch mode |
+
+### Formatting
+
+| Command             | Description               |
+| ------------------- | ------------------------- |
+| `yarn format`       | Format code with Prettier |
+| `yarn format:check` | Check formatting (CI)     |
+
+### Database (Supabase)
+
+| Command          | Description                                        |
+| ---------------- | -------------------------------------------------- |
+| `yarn db:start`  | Start local Supabase instance                      |
+| `yarn db:stop`   | Stop local Supabase instance                       |
+| `yarn db:reset`  | Reset database (drops all data)                    |
+| `yarn db:seed`   | Seed database with initial data                    |
+| `yarn db:setup`  | Full setup: start + reset + seed + generate Prisma |
+| `yarn db:status` | Show Supabase connection details                   |
+| `yarn db:logs`   | View Supabase logs                                 |
+
+### Prisma
 
 | Command                | Description             |
 | ---------------------- | ----------------------- |
 | `yarn prisma:generate` | Generate Prisma client  |
 | `yarn prisma:migrate`  | Run database migrations |
-| `yarn prisma:studio`   | Open Prisma Studio      |
+| `yarn prisma:studio`   | Open Prisma Studio UI   |
+| `yarn prisma:format`   | Format Prisma schema    |
+| `yarn prisma:validate` | Validate Prisma schema  |
 
 ## Project Structure
 
@@ -106,24 +162,54 @@ cp apps/backend/.env.sample apps/backend/.env
 ├── libs/
 │   └── shared/          # Shared utilities/constants
 ├── prisma/
-│   └── schema.prisma    # Database schema
+│   └── schema/          # Database schema (multi-file)
+├── supabase/
+│   ├── migrations/      # Database migrations
+│   └── seed.sql         # Seed data
 └── package.json
 ```
 
-## Adding New Projects
+## Development Workflow
+
+### First Time Setup
 
 ```bash
-# Generate a new app
-npx nx g @nx/next:app demo
+# 1. Setup project
+yarn setup
 
-# Generate a shared library
-npx nx g @nx/react:lib mylib
+# 2. Update .env files with actual values
+# (See Environment Variables section)
 
-# Visualize project graph
-npx nx graph
+# 3. Start database and seed
+yarn db:setup
+
+# 4. Start development
+yarn dev
 ```
 
-For more Nx features, see the [Nx Documentation](https://nx.dev).
+### Daily Development
+
+```bash
+# Start Supabase (if not running)
+yarn db:start
+
+# Start dev servers
+yarn dev
+```
+
+### Database Changes
+
+```bash
+# 1. Modify Prisma schema in prisma/schema/
+# 2. Create migration
+yarn prisma:migrate
+
+# 3. Generate Prisma client
+yarn prisma:generate
+
+# 4. (Optional) Reset and reseed
+yarn db:reset && yarn db:seed
+```
 
 ## Development Tools
 
@@ -154,6 +240,31 @@ Recommended extensions are listed in `.vscode/extensions.json`. Install them for
 - Prettier
 - ESLint
 - Tailwind CSS IntelliSense
+
+## Troubleshooting
+
+### Database Connection Issues
+
+```bash
+# Check Supabase status
+yarn db:status
+
+# Restart Supabase
+yarn db:stop && yarn db:start
+```
+
+### Prisma Client Not Found
+
+```bash
+# Regenerate Prisma client
+yarn prisma:generate
+```
+
+### Port Already in Use
+
+- Frontend: Change `PORT` in `apps/client/package.json` or use `-p` flag
+- Backend: Change `PORT` in `apps/backend/.env`
+- Supabase: Check `supabase/config.toml`
 
 ## Useful Links
 

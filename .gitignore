@@ -1,11 +1,19 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# Environment variables
+# Environment variables - ignore all except samples/examples
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+!.env.sample
+!.env*.sample
+!.env.example
+!.env*.example
+
+# Environment variables - ignore all except samples/examples
+**/.env*
+!**/.env.sample
+!**/.env*.sample
+!**/.env.example
+!**/.env*.example
 
 # compiled output
 dist
